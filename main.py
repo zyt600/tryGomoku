@@ -14,10 +14,12 @@ RIGHT = 8  # 定义方向常量，右
 LEFT_DOWN = 9  # 定义方向常量，左下
 RIGHT_DOWN = 10  # 定义方向常量，右下
 DIRECTION_LIST = [[0, 1], [0, -1], [-1, 1], [1, 1], [-1, 0], [1, 0], [-1, -1], [1, -1]]
-MYCOLOR = 0
+MY_COLOR = 0
+ENEMY_COLOR = 0
 
 
 class SearchResult:
+    """搜索结果类，包含搜索方向、颜色、棋子连成的长度、是否有空格、是否有障碍"""
     direction = -1
     myColor = 0  # 正在搜索的颜色颜色
     myLen = 0  # 表示我方连续棋子的长度
@@ -33,6 +35,11 @@ class SearchResult:
 
 
 class RecommendPosition:
+    """推荐落子位置类，以score程度推荐落子于board上的（row，col）。注意!:这并非输出到屏幕上的row和col
+    什么位置可以得高分？如果是防守的话，优先堵对方《重要的棋》（下文所述），
+    TODO:堵对方可以形成双活三的棋
+    TODO:进攻的话，可以考虑埋伏一手，搞一个潜在的双活三，但不漏出来，最后一步再漏出来
+    （因为考虑到别人的程序可能不会检测围堵活二）"""
     score = 0
     row = 0
     col = 0
@@ -44,12 +51,13 @@ class RecommendPosition:
 
 
 def printBoard():
+    """输出整个棋盘"""
     for i in range(15, 0, -1):
         print("%02d" % (i - 1), board_17x17[i][1:16])
 
 
 def search_along(direction, row, col, myColor):
-    """沿着direction方向搜索"""
+    """沿着direction方向递归搜索，返回一个SearchResult类"""
     if row < 0 or col < 0 or row > 16 or col > 16:  # 边界检查
         re = SearchResult(direction, myColor, 0, 0, 1)
         return re
@@ -86,6 +94,8 @@ def judge_must_row(row, col, color_now=5):
             pass  # 这就是单4了
         else:
             pass  # 双四了，没救了or赢了
+    if 1 + resultRight.myLen + resultLeft.myLen == 5:
+    # TODO：
     # 下面判断是否是断的棋（断3、断4）(长度一定是1或者2了）
     if resultRight.emptyNum + resultLeft.emptyNum == 2:
         resultRight_3 = search_along(RIGHT, row, col + 3, color_now)
@@ -105,14 +115,20 @@ for ii in range(17):  # 设置棋盘边界
 
 stringColor = input("请输入我方是 黑 还是 白")
 if stringColor == "黑":
-    MYCOLOR = BLACK
+    MY_COLOR = BLACK
+    ENEMY_COLOR = WHITE
     print("以最左下角可落子处为（0，0），我方第一步落子于（7，7）")
     board_17x17[8][8] = BLACK
     printBoard()
+    enemyWhite = input("请输入白棋落子位置，以空格分开")
+    enemyRow, enemyCol = enemyWhite.split(" ")
+    enemyRow = int(enemyRow)
+    enemyCol = int(enemyCol)
+    board_17x17[enemyRow + 1][enemyCol + 1] = ENEMY_COLOR
+    printBoard()
+    # 该黑棋落第三个子了，注意，不能落在天元5x5范围内，也就是说输出到屏幕的坐标范围必须不是[5~9]
 
 else:
-    MYCOLOR = WHITE
-
-# for i in range(17):
-#     print(board_17x17[i])
-#     # judge_must()
+    MY_COLOR = WHITE
+    ENEMY_COLOR = BLACK
+    board_17x17[8][8] = BLACK
