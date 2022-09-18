@@ -95,7 +95,8 @@ def judge_must_row(row, col, color_now=5):
         else:
             pass  # 双四了，没救了or赢了
     if 1 + resultRight.myLen + resultLeft.myLen == 5:
-    # TODO：
+    # TODO：在这里加如果连成五个子该怎么办（比如输出你输了/赢了之类的
+        pass
     # 下面判断是否是断的棋（断3、断4）(长度一定是1或者2了）
     if resultRight.emptyNum + resultLeft.emptyNum == 2:
         resultRight_3 = search_along(RIGHT, row, col + 3, color_now)
