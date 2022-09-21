@@ -37,9 +37,13 @@ class SearchResult:
 class RecommendPosition:
     """推荐落子位置类，以score程度推荐落子于board上的（row，col）。注意!:这并非输出到屏幕上的row和col
     什么位置可以得高分？如果是防守的话，优先堵对方《重要的棋》（下文所述），
-    TODO:堵对方可以形成双活三的棋
-    TODO:进攻的话，可以考虑埋伏一手，搞一个潜在的双活三，但不漏出来，最后一步再漏出来
     （因为考虑到别人的程序可能不会检测围堵活二）"""
+
+    # TODO:堵对方可以形成双活三的棋
+    # TODO:进攻的话，可以考虑埋伏一手，搞一个潜在的双活三，但不漏出来，最后一步再漏出来
+    # TODO:可以前4步如果白棋被隔开，就开辟一个新区域去落第一步，然后执行先手必胜
+    # TODO:可以设置""棋风一转"模块🐶，考虑如果对方强行追求和棋，有没有什么反制措施
+
     score = 0
     row = 0
     col = 0
@@ -95,7 +99,7 @@ def judge_must_row(row, col, color_now=5):
         else:
             pass  # 双四了，没救了or赢了
     if 1 + resultRight.myLen + resultLeft.myLen == 5:
-    # TODO：在这里加如果连成五个子该怎么办（比如输出你输了/赢了之类的
+        # TODO：在这里加如果连成五个子该怎么办（比如输出你输了/赢了之类的
         pass
     # 下面判断是否是断的棋（断3、断4）(长度一定是1或者2了）
     if resultRight.emptyNum + resultLeft.emptyNum == 2:
