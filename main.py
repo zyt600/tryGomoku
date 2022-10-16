@@ -33,6 +33,18 @@ class SearchResult:
         self.myColor = myColor
         self.myLen = myLen
 
+def searchable(row, col):
+    """判断(row,col)是否在棋盘内"""
+    if row <= 0 or col <= 0 or row >= 16 or col >= 16:
+        return False
+    if board_17x17[row][col]==BLACK or board_17x17[row][col]==WHITE:
+        return False
+    return True
+
+
+
+
+
 def printBoard():
     """输出整个棋盘"""
     for i in range(15, 0, -1):
@@ -49,6 +61,7 @@ def printBoard():
                 print('0', end=' ')
         print()
 
+
 def search_along(direction, row, col, myColor):
     """沿着direction方向递归搜索，返回一个SearchResult类"""
     if row <= 0 or col <= 0 or row >= 16 or col >= 16:  # 边界检查
@@ -64,6 +77,7 @@ def search_along(direction, row, col, myColor):
     result = search_along(direction, row + DIRECTION_LIST[direction - 3], col + DIRECTION_LIST[direction - 3], myColor)
     result.myLen += 1
     return result
+
 
 def import_board_17x17():
     f = open("board17x17.txt", "r+")
@@ -84,8 +98,38 @@ def import_board_17x17():
     print("finish importing\n")
     return
 
-class 
 
+class importantStructureHere:
+    """这一个点所能够形成的各类棋型的数量"""
+    live3 = 0
+    died3 = 0
+
+    live4 = 0
+    died4 = 0
+
+    live5 = 0
+
+    live2 = 0
+    died2 = 0
+
+    def __init__(self, l3=0, d3=0, l4=0, d4=0, l5=0, l2=0, d2=0):
+        self.live2 = l2
+        self.live3 = l3
+        self.live4 = l4
+        self.live5 = l5
+
+        self.died2 = d2
+        self.died3 = d3
+        self.died4 = d4
+
+def searchImportantStructure(row,col,mycolor):
+    """搜索如果落子在(row,col)所能形成的重要性"""
+#     TODO:朱涛,通过search_along函数的返回值判断形成的各个importantStructureHere结构的数量,返回一个importantStructureHere结构
+
+
+def calImportance(importantStructureHere):
+    """以一个importantStructureHere为参数,返回一个整,代表这个点的重要性数值"""
+#     TODO:朱涛,选择合适的权重
 
 
 import_board_17x17()
@@ -134,7 +178,14 @@ if stringColor == "黑":
         board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
         printBoard()
 
-
+        searchList=[]#存储可搜索,离得近,应当被搜索的点的元组列表 注意:!!!这里的坐标是数组下标而非用户输入输出的数字
+        for row in range(15, 0, -1):
+            for col in range(15, 0, -1):
+                if board_17x17[row][col]==BLACK or board_17x17[row][col]==WHITE:
+                    if searchable(row,col):
+                        if (row,col) not in searchList:
+                            searchList.append((row,col))
+                    
         # TODO:朱涛通过一些方法,输出黑棋应当落子的位置
         # 比如搜索附近的所有点的推荐值
         printBoard()
@@ -144,3 +195,5 @@ else:
     MY_COLOR = WHITE
     ENEMY_COLOR = BLACK
     board_17x17[8][8] = BLACK
+    # TODO:白棋同理于黑棋,输出推荐落子
+
