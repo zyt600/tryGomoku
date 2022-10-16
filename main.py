@@ -57,7 +57,18 @@ class RecommendPosition:
 def printBoard():
     """输出整个棋盘"""
     for i in range(15, 0, -1):
-        print("%02d" % (i - 1), board_17x17[i][1:16])
+        # print('\033[30;40mb\033[0m', end=' ')
+        #
+        # print("\033[31m这是红色字体\033[0m")
+        print("%02d:" % (i - 1), end=' ')
+        for j in range(1, 17):
+            if board_17x17[i][j] == BLACK:
+                print('\033[30;40mb\033[0m', end=' ')
+            elif board_17x17[i][j] == WHITE:
+                print('\033[37;47mw\033[0m', end=' ')
+            else:
+                print('0', end=' ')
+        print()
 
 
 def search_along(direction, row, col, myColor):
@@ -82,9 +93,9 @@ def judge_must(row, col):
     row为对手上一落子所在行,col为列"""
 
 
-def judge_must_row(row, col, color_now=5):
+def judge_must_row(row, col, color_now=-999):
     """判断本行是否有重要的棋"""
-    if color_now == 5:
+    if color_now != BLACK and color_now != WHITE:
         color_now = board_17x17[row][col]
     resultLeft = search_along(LEFT, row, col - 1, color_now)
     resultRight = search_along(RIGHT, row, col + 1, color_now)
@@ -112,14 +123,14 @@ def judge_must_row(row, col, color_now=5):
 
 
 def import_board_17x17():
-    f = open("board17x17.txt", "+")
+    f = open("board17x17.txt", "r+")
     for i in range(17):
         line = f.readline()
         for j in range(17):
-            if line[j]=='0':
-                board_17x17[i][j]=0
-            elif line[j]=='2':
-                board_17x17[i][j]=2
+            if line[j] == '0':
+                board_17x17[i][j] = 0
+            elif line[j] == '2':
+                board_17x17[i][j] = 2
             elif line[j] == 'b':
                 board_17x17[i][j] = BLACK
             elif line[j] == 'w':
@@ -127,7 +138,8 @@ def import_board_17x17():
             else:
                 print("import board error!\n")
                 return
-        print("finish importing")
+    print("finish importing\n")
+    return
 
 
 import_board_17x17()
@@ -145,12 +157,39 @@ if stringColor == "黑":
     print("以最左下角可落子处为（0，0），我方第一步落子于（7，7）")
     board_17x17[8][8] = BLACK
     printBoard()
+
     enemyWhite = input("请输入白棋落子位置，以空格分开")
     enemyRow, enemyCol = enemyWhite.split(" ")
-    enemyRow = int(enemyRow)
-    enemyCol = int(enemyCol)
-    board_17x17[enemyRow + 1][enemyCol + 1] = ENEMY_COLOR
+    enemyRow = int(enemyRow) + 1
+    enemyCol = int(enemyCol) + 1
+    board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
     printBoard()
+
+    if enemyRow == 9 and enemyCol == 9:
+        board_17x17[11][5] = BLACK
+        print("落子于10,4")
+    elif enemyRow == 7 and enemyCol == 7:
+        board_17x17[11][5] = BLACK
+        print("落子于10,4")
+    elif enemyRow == 10 and enemyCol == 10:
+        board_17x17[11][5] = BLACK
+        print("落子于10,4")
+    else:
+        board_17x17[11][11] = BLACK
+        print("落子于10,10")
+
+    printBoard()
+
+    while True:
+        enemyWhite = input("请输入白棋落子位置，以空格分开")
+        enemyRow, enemyCol = enemyWhite.split(" ")
+        enemyRow = int(enemyRow) + 1
+        enemyCol = int(enemyCol) + 1
+        board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
+        printBoard()
+
+    # TODO:朱涛
+
     # 该黑棋落第三个子了，注意，不能落在天元5x5范围内，也就是说输出到屏幕的坐标范围必须不是[5~9]
 
 else:
