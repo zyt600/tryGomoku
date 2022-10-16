@@ -35,7 +35,7 @@ class SearchResult:
 
 
 class RecommendPosition:
-    """推荐落子位置类，以score程度推荐落子于board上的（row，col）。注意!:这并非输出到屏幕上的row和col
+    """推荐落子位置类，以score程度推荐落子于board上的（row，col）。注意!:这并非输出到屏幕上的row和col(因为棋盘有边缘的一圈2作为边界)
     什么位置可以得高分？如果是防守的话，优先堵对方《重要的棋》（下文所述），
     （因为考虑到别人的程序可能不会检测围堵活二）"""
 
@@ -62,7 +62,7 @@ def printBoard():
 
 def search_along(direction, row, col, myColor):
     """沿着direction方向递归搜索，返回一个SearchResult类"""
-    if row < 0 or col < 0 or row > 16 or col > 16:  # 边界检查
+    if row <= 0 or col <= 0 or row >= 16 or col >= 16:  # 边界检查
         re = SearchResult(direction, myColor, 0, 0, 1)
         return re
     elif board_17x17[row][col] == myColor * -1 or board_17x17[row][col] == 2:  # 碰壁（边界或对方棋子）的情况
@@ -111,12 +111,32 @@ def judge_must_row(row, col, color_now=5):
             pass  # 断3或断4，一定要堵中间
 
 
+def import_board_17x17():
+    f = open("board17x17.txt", "+")
+    for i in range(17):
+        line = f.readline()
+        for j in range(17):
+            if line[j]=='0':
+                board_17x17[i][j]=0
+            elif line[j]=='2':
+                board_17x17[i][j]=2
+            elif line[j] == 'b':
+                board_17x17[i][j] = BLACK
+            elif line[j] == 'w':
+                board_17x17[i][j] = WHITE
+            else:
+                print("import board error!\n")
+                return
+        print("finish importing")
+
+
+import_board_17x17()
 printBoard()
-for ii in range(17):  # 设置棋盘边界
-    board_17x17[ii][0] = 2
-    board_17x17[0][ii] = 2
-    board_17x17[ii][16] = 2
-    board_17x17[16][ii] = 2
+# for ii in range(17):  # 设置棋盘边界
+#     board_17x17[ii][0] = 2
+#     board_17x17[0][ii] = 2
+#     board_17x17[ii][16] = 2
+#     board_17x17[16][ii] = 2
 
 stringColor = input("请输入我方是 黑 还是 白")
 if stringColor == "黑":
