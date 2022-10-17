@@ -13,6 +13,7 @@ LEFT = 7  # 定义方向常量，左
 RIGHT = 8  # 定义方向常量，右
 LEFT_DOWN = 9  # 定义方向常量，左下
 RIGHT_DOWN = 10  # 定义方向常量，右下
+#周雨童:我检查完了,没问题
 DIRECTION_LIST = [[0, 1], [0, -1], [-1, 1], [1, 1], [-1, 0], [1, 0], [-1, -1], [1, -1]]
 MY_COLOR = 0
 ENEMY_COLOR = 0
@@ -40,9 +41,6 @@ def searchable(row, col):
     if board_17x17[row][col]==BLACK or board_17x17[row][col]==WHITE:
         return False
     return True
-
-
-
 
 
 def printBoard():
@@ -74,7 +72,7 @@ def search_along(direction, row, col, myColor):
         re = SearchResult(direction, myColor, 0, 1, 0)
         return re
     # 有我方棋子情况
-    result = search_along(direction, row + DIRECTION_LIST[direction - 3], col + DIRECTION_LIST[direction - 3], myColor)
+    result = search_along(direction, row + DIRECTION_LIST[direction - 3][1], col + DIRECTION_LIST[direction - 3][0], myColor)
     result.myLen += 1
     return result
 
@@ -185,7 +183,7 @@ if stringColor == "黑":
                     if searchable(row,col):
                         if (row,col) not in searchList:
                             searchList.append((row,col))
-                    
+
         # TODO:朱涛通过一些方法,输出黑棋应当落子的位置
         # 比如搜索附近的所有点的推荐值
         printBoard()
