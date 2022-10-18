@@ -16,6 +16,7 @@ RIGHT_DOWN = 10  # 定义方向常量，右下
 DIRECTION_LIST = [[0, 1], [0, -1], [-1, 1], [1, 1], [-1, 0], [1, 0], [-1, -1], [1, -1]]
 MY_COLOR = 0
 ENEMY_COLOR = 0
+ZYT_TEST = True
 
 
 class SearchResult:
@@ -38,7 +39,7 @@ def searchable(row, col):
     """判断(row,col)是否在棋盘内"""
     if row <= 0 or col <= 0 or row >= 16 or col >= 16:
         return False
-    if board_17x17[row][col]==BLACK or board_17x17[row][col]==WHITE:
+    if board_17x17[row][col] == BLACK or board_17x17[row][col] == WHITE:
         return False
     return True
 
@@ -60,15 +61,15 @@ def printBoard():
                 print(board_17x17[i][j], end='  ')
         print()
     # 输出列索引
-    print("    ",end='')
+    print("    ", end='')
     for i in range(10):
-        print("\033[31m%d\033[0m"%i,end='  ',sep='')
-    for i in range(10,15):
-        print("\033[31m%d\033[0m"%i,end=' ',sep='')
+        print("\033[31m%d\033[0m" % i, end='  ', sep='')
+    for i in range(10, 15):
+        print("\033[31m%d\033[0m" % i, end=' ', sep='')
     print()
 
 
-def search_along(direction, row, col, myColor,first=True):
+def search_along(direction, row, col, myColor, first=True):
     """沿着direction方向递归搜索，返回一个SearchResult类"""
     if first:
         row += DIRECTION_LIST[direction - 3][1]
@@ -83,7 +84,8 @@ def search_along(direction, row, col, myColor,first=True):
         re = SearchResult(direction, myColor, 0, 1, 0)
         return re
     # 有我方棋子情况，注意返回值
-    result = search_along(direction, row + DIRECTION_LIST[direction - 3][1], col + DIRECTION_LIST[direction - 3][0], myColor,False)
+    result = search_along(direction, row + DIRECTION_LIST[direction - 3][1], col + DIRECTION_LIST[direction - 3][0],
+                          myColor, False)
     result.myLen += 1
     return result
 
@@ -131,71 +133,73 @@ class importantStructureHere:
         self.died3 = d3
         self.died4 = d4
 
-def searchImportantStructure(row,col,mycolor):
+
+def searchImportantStructure(row, col, mycolor):
     """搜索如果落子在(row,col)所能形成的重要性"""
-#     TODO:朱涛,通过search_along函数的返回值判断形成的各个importantStructureHere结构的数量,返回一个importantStructureHere结构
-    
-    reup =search_along(UP, row, col, mycolor)
-    redown =search_along(DOWN, row, col, mycolor)
-    relu=search_along(LEFT_UP, row, col, mycolor)
-    reru=search_along(RIGHT_UP, row, col, mycolor)
-    releft=search_along(LEFT, row, col, mycolor)
-    reright=search_along(RIGHT, row, col, mycolor)
-    reld=search_along(LEFT_DOWN, row, col, mycolor)
-    rerd=search_along(RIGHT_DOWN, row, col, mycolor)
 
-# 八个方向八个类，通过类成员的运算判定出所形成的棋子类型
-    l3=int(reup.myLen+redown.myLen >=2 and reup.emptyNum + redown.emptyNum==2)\
-       +int(releft.myLen+reright.myLen >=2 and releft.emptyNum + reright.emptyNum==2)\
-       +int(reru.myLen+reld.myLen >=2 and reru.emptyNum + reld.emptyNum==2)\
-       +int(rerd.myLen+relu.myLen >=2 and rerd.emptyNum + relu.emptyNum==2)
+    reup = search_along(UP, row, col, mycolor)
+    redown = search_along(DOWN, row, col, mycolor)
+    relu = search_along(LEFT_UP, row, col, mycolor)
+    reru = search_along(RIGHT_UP, row, col, mycolor)
+    releft = search_along(LEFT, row, col, mycolor)
+    reright = search_along(RIGHT, row, col, mycolor)
+    reld = search_along(LEFT_DOWN, row, col, mycolor)
+    rerd = search_along(RIGHT_DOWN, row, col, mycolor)
 
-    d3=int(reup.myLen+redown.myLen >=2)+int(releft.myLen+reright.myLen >=2)+int(reru.myLen+reld.myLen >=2)+int(rerd.myLen+relu.myLen >=2)
+    # 八个方向八个类，通过类成员的运算判定出所形成的棋子类型
+    l3 = int(reup.myLen + redown.myLen >= 2 and reup.emptyNum + redown.emptyNum == 2) \
+         + int(releft.myLen + reright.myLen >= 2 and releft.emptyNum + reright.emptyNum == 2) \
+         + int(reru.myLen + reld.myLen >= 2 and reru.emptyNum + reld.emptyNum == 2) \
+         + int(rerd.myLen + relu.myLen >= 2 and rerd.emptyNum + relu.emptyNum == 2)
 
-    l4=int(reup.myLen+redown.myLen >=3 and reup.emptyNum + redown.emptyNum==2)\
-       +int(releft.myLen+reright.myLen >=3 and releft.emptyNum + reright.emptyNum==2)\
-       +int(reru.myLen+reld.myLen >=3 and reru.emptyNum + reld.emptyNum==2)\
-       +int(rerd.myLen+relu.myLen >=3 and rerd.emptyNum + relu.emptyNum==2)
+    d3 = int(reup.myLen + redown.myLen >= 2) + int(releft.myLen + reright.myLen >= 2) + int(
+        reru.myLen + reld.myLen >= 2) + int(rerd.myLen + relu.myLen >= 2)
 
-    d4=int(reup.myLen+redown.myLen >=3)+int(releft.myLen+reright.myLen >=3)+int(reru.myLen+reld.myLen >=3)+int(rerd.myLen+relu.myLen >=3)
+    l4 = int(reup.myLen + redown.myLen >= 3 and reup.emptyNum + redown.emptyNum == 2) \
+         + int(releft.myLen + reright.myLen >= 3 and releft.emptyNum + reright.emptyNum == 2) \
+         + int(reru.myLen + reld.myLen >= 3 and reru.emptyNum + reld.emptyNum == 2) \
+         + int(rerd.myLen + relu.myLen >= 3 and rerd.emptyNum + relu.emptyNum == 2)
 
-    l5=int(reup.myLen+redown.myLen >=4)+int(releft.myLen+reright.myLen >=4)+int(reru.myLen+reld.myLen >=4)+int(rerd.myLen+relu.myLen >=4)
+    d4 = int(reup.myLen + redown.myLen >= 3) + int(releft.myLen + reright.myLen >= 3) + int(
+        reru.myLen + reld.myLen >= 3) + int(rerd.myLen + relu.myLen >= 3)
 
+    l5 = int(reup.myLen + redown.myLen >= 4) + int(releft.myLen + reright.myLen >= 4) + int(
+        reru.myLen + reld.myLen >= 4) + int(rerd.myLen + relu.myLen >= 4)
 
-    l2 = int(reup.myLen==1 and reup.emptyNum==1) +int(redown.myLen==1 and redown.emptyNum==1) + int(relu.myLen==1 and relu.emptyNum==1) \
-       + int(reru.myLen == 1 and reru.emptyNum == 1)+int(releft.myLen==1 and releft.emptyNum==1)+int(reright.myLen==1 and reright.emptyNum==1) \
-       + int(reld.myLen == 1 and reld.emptyNum == 1)+int(rerd.myLen==1 and rerd.emptyNum == 1)
+    l2 = int(reup.myLen == 1 and reup.emptyNum == 1) + int(redown.myLen == 1 and redown.emptyNum == 1) + int(
+        relu.myLen == 1 and relu.emptyNum == 1) \
+         + int(reru.myLen == 1 and reru.emptyNum == 1) + int(releft.myLen == 1 and releft.emptyNum == 1) + int(
+        reright.myLen == 1 and reright.emptyNum == 1) \
+         + int(reld.myLen == 1 and reld.emptyNum == 1) + int(rerd.myLen == 1 and rerd.emptyNum == 1)
 
+    d2 = int(reup.myLen == 1 and reup.emptyNum == 0) + int(redown.myLen == 1 and redown.emptyNum == 0) + int(
+        relu.myLen == 1 and relu.emptyNum == 0) \
+         + int(reru.myLen == 1 and reru.emptyNum == 0) + int(releft.myLen == 1 and releft.emptyNum == 0) + int(
+        reright.myLen == 1 and reright.emptyNum == 0) \
+         + int(reld.myLen == 1 and reld.emptyNum == 0) + int(rerd.myLen == 1 and rerd.emptyNum == 0)
 
-    d2 = int(reup.myLen==1 and reup.emptyNum==0)+int(redown.myLen==1 and redown.emptyNum==0)+int(relu.myLen==1 and relu.emptyNum==0) \
-       + int(reru.myLen == 1 and reru.emptyNum == 0)+int(releft.myLen==1 and releft.emptyNum==0)+int(reright.myLen==1 and reright.emptyNum==0) \
-       + int(reld.myLen == 1 and reld.emptyNum == 0)+int(rerd.myLen==1 and rerd.emptyNum==0)
-
-
-#传参到importantSructureHere中
-    imS=importantStructureHere(l3, d3, l4, d4, l5, l2, d2)
+    # 传参到importantSructureHere中
+    imS = importantStructureHere(l3, d3, l4, d4, l5, l2, d2)
     return imS
-
-
-
 
 
 def Mycolor_calImportance(importantStructureHere):
     """以一个importantStructureHere为参数,返回一个整,代表这个点的重要性数值"""
-#     TODO:朱涛,选择合适的权重
-    if importantStructureHere.live5 >=1:
+    # TODO :朱涛,选择合适的权重，根据各个结构的数量而非存在性进行加分，计算敌我分数差值
+    #      （也可以更准确的来说，是加和。比如我方下这里得10分，敌方得20分，那么下这里就有30分的好处
+    if importantStructureHere.live5 >= 1:
         return 10001
-    elif importantStructureHere.live4 >=1:
+    elif importantStructureHere.live4 >= 1:
         return 8888
-    elif importantStructureHere.live3 >=1:
+    elif importantStructureHere.live3 >= 1:
         return 7777
-    elif importantStructureHere.live2 >=1:
+    elif importantStructureHere.live2 >= 1:
         return 5555
-    elif importantStructureHere.died4 >=1:
+    elif importantStructureHere.died4 >= 1:
         return 6666
-    elif importantStructureHere.died3 >=1:
+    elif importantStructureHere.died3 >= 1:
         return 4444
-    elif importantStructureHere.died2 >=1:
+    elif importantStructureHere.died2 >= 1:
         return 3333
     else:
         return 1111
@@ -228,22 +232,22 @@ printBoard()
 #     board_17x17[ii][16] = 2
 #     board_17x17[16][ii] = 2
 
-MyscoreBoard=[[0 for x1 in (range(17))]for y1 in range(17)]
-EnemyscoreBoard=[[0 for x2 in (range(17))]for y2 in range(17)]
-mymax=0
-enemymax=0
-myx=0
-myy=0
-eny=0
-enx=0
+MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
+EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
+mymax = 0
+enemymax = 0
+myx = 0
+myy = 0
+eny = 0
+enx = 0
 
-
-#我方和敌人的得分列表
-
+# 我方和敌人的得分列表
 stringColor = input("请输入我方是 黑(h) 还是 白：")
 if stringColor == "黑" or stringColor == "h":
     MY_COLOR = BLACK
     ENEMY_COLOR = WHITE
+
+    # 我方第一步
     print("以最左下角可落子处为（0，0），我方第一步落子于（7，7）")
     board_17x17[8][8] = BLACK
     printBoard()
@@ -255,13 +259,11 @@ if stringColor == "黑" or stringColor == "h":
     board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
     printBoard()
 
-    if enemyRow == 9 and enemyCol == 9:
-        board_17x17[11][5] = BLACK
-        print("落子于10,4")
-    elif enemyRow == 7 and enemyCol == 7:
-        board_17x17[11][5] = BLACK
-        print("落子于10,4")
-    elif enemyRow == 10 and enemyCol == 10:
+
+    # 我方第二步
+    if (enemyRow == 9 and enemyCol == 9) or (enemyRow == 10 and enemyCol == 10) or (
+            enemyRow == 7 and enemyCol == 7) or (enemyRow == 8 and enemyCol == 9) or \
+            (enemyRow == 9 and enemyCol == 8) or (enemyRow == 11 and enemyCol == 11):
         board_17x17[11][5] = BLACK
         print("落子于10,4")
     else:
@@ -270,6 +272,7 @@ if stringColor == "黑" or stringColor == "h":
 
     printBoard()
 
+    # 我方第三步
 
     while True:
         enemyWhite = input("请输入白棋落子位置，以空格分开")
@@ -278,24 +281,23 @@ if stringColor == "黑" or stringColor == "h":
         enemyCol = int(enemyCol) + 1
         board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
 
+        myStepNum = 3 # myStepNum为我方该下哪一步了
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if board_17x17[row][col]!=BLACK and board_17x17[row][col] !=WHITE:
-                    imSmy=searchImportantStructure(row, col, MY_COLOR)
-                    MyscoreBoard[row][col]=Mycolor_calImportance(imSmy)
+                if board_17x17[row][col] != BLACK and board_17x17[row][col] != WHITE:
+                    imSmy = searchImportantStructure(row, col, MY_COLOR)
+                    MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
                     imSen = searchImportantStructure(row, col, ENEMY_COLOR)
-                    EnemyscoreBoard[row][col]=Enemy_color_calImportance(imSen)
-
-
-
+                    EnemyscoreBoard[row][col] = Enemy_color_calImportance(imSen)
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if MyscoreBoard[row][col]>=mymax:
-                    mymax=MyscoreBoard[row][col]
-                    myx=row
-                    myy=col
-                    print("aaa",mymax,myx,myy)
+                if MyscoreBoard[row][col] >= mymax:
+                    mymax = MyscoreBoard[row][col]
+                    myx = row
+                    myy = col
+                    if ZYT_TEST:
+                        print("mymax:", mymax, "x:", myx, "y:", myy)
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
@@ -304,8 +306,7 @@ if stringColor == "黑" or stringColor == "h":
                     enx = row
                     eny = col
 
-
-        if MyscoreBoard[myx][myy]>=EnemyscoreBoard[enx][eny]:
+        if MyscoreBoard[myx][myy] >= EnemyscoreBoard[enx][eny]:
             board_17x17[myx][myy] = BLACK
         else:
             board_17x17[enx][eny] = BLACK
@@ -322,7 +323,7 @@ if stringColor == "黑" or stringColor == "h":
 
 
 
-#我方是白棋子
+# 我方是白棋子
 else:
     MY_COLOR = WHITE
     ENEMY_COLOR = BLACK
@@ -334,23 +335,21 @@ else:
         enemyCol = int(enemyCol) + 1
         board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
 
-
-        searchList=[]#存储可搜索,离得近,应当被搜索的点的元组列表 注意:!!!这里的坐标是数组下标而非用户输入输出的数字
+        searchList = []  # 存储可搜索,离得近,应当被搜索的点的元组列表 注意:!!!这里的坐标是数组下标而非用户输入输出的数字
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if board_17x17[row][col]!=BLACK and board_17x17[row][col] !=WHITE:
-                    imSmy=searchImportantStructure(row, col, MY_COLOR)
-                    MyscoreBoard[row][col]=Mycolor_calImportance(imSmy)
+                if board_17x17[row][col] != BLACK and board_17x17[row][col] != WHITE:
+                    imSmy = searchImportantStructure(row, col, MY_COLOR)
+                    MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
                     imSen = searchImportantStructure(row, col, ENEMY_COLOR)
-                    EnemyscoreBoard[row][col]=Enemy_color_calImportance(imSen)
-
+                    EnemyscoreBoard[row][col] = Enemy_color_calImportance(imSen)
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if MyscoreBoard[row][col]>=mymax:
-                    mymax=MyscoreBoard[row][col]
-                    myx=row
-                    myy=col
+                if MyscoreBoard[row][col] >= mymax:
+                    mymax = MyscoreBoard[row][col]
+                    myx = row
+                    myy = col
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
@@ -359,14 +358,12 @@ else:
                     enx = row
                     eny = col
 
-
-        if MyscoreBoard[myx][myy]>EnemyscoreBoard[enx][eny]:
+        if MyscoreBoard[myx][myy] > EnemyscoreBoard[enx][eny]:
             board_17x17[myx][myy] = WHITE
         else:
             board_17x17[enx][eny] = WHITE
 
         MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
         EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
-
 
         printBoard()
