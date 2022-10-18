@@ -1,31 +1,3 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@pigpeach 
-zyt600
-/
-try-python
-Private
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-Insights
-try-python/main.py /
-@zyt600
-zyt600 Update main.py
-Latest commit 1fd20a2 3 minutes ago
- History
- 2 contributors
-@zyt600@pigpeach
-363 lines (292 sloc)  12.7 KB
-
 """黑方先行，为1，白方为-1，空棋盘为0，边界为2，
 天元即棋盘的最中心，在board_17x17棋盘的（8，8）,在被打印出的棋盘中位置为(7,7)"""
 board_17x17 = [[0 for i in range(17)] for j in range(17)]
@@ -78,14 +50,20 @@ def printBoard():
         # print("\033[31m这是红色字体\033[0m")
         print("%02d:" % (i - 1), end=' ')
         ##$##输出横索引
-        for j in range(1, 17):
+        for j in range(1, 16):
             if board_17x17[i][j] == BLACK:
-                print('\033[30;40mb\033[0m', end=' ')
+                print('\033[30;40mb\033[0m', end='  ')
             elif board_17x17[i][j] == WHITE:
-                print('\033[37;47mw\033[0m', end=' ')
+                print('\033[37;47mw\033[0m', end='  ')
             else:
-                print('0', end=' ')
+                print(board_17x17[i][j], end='  ')
         print()
+    print("    ",end='')
+    for i in range(10):
+        print(i,end='  ',sep='')
+    for i in range(10,15):
+        print(i,end=' ',sep='')
+    print()
 
 
 def search_along(direction, row, col, myColor):
@@ -389,17 +367,3 @@ else:
 
 
         printBoard()
-Footer
-© 2022 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
