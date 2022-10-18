@@ -134,8 +134,7 @@ class importantStructureHere:
 def searchImportantStructure(row,col,mycolor):
     """搜索如果落子在(row,col)所能形成的重要性"""
 #     TODO:朱涛,通过search_along函数的返回值判断形成的各个importantStructureHere结构的数量,返回一个importantStructureHere结构
-    if row==6 and col ==8:
-        oooiii=1
+    
     reup =search_along(UP, row, col, mycolor)
     redown =search_along(DOWN, row, col, mycolor)
     relu=search_along(LEFT_UP, row, col, mycolor)
