@@ -112,6 +112,7 @@ def import_board_17x17():
 
 class importantStructureHere:
     """这一个点所能够形成的各类棋型的数量"""
+    # TODO :朱涛：如果有必要，加进去更多形状结构，不过大概率不用了
     live3 = 0
     died3 = 0
 
@@ -136,7 +137,8 @@ class importantStructureHere:
 
 def searchImportantStructure(row, col, mycolor):
     """搜索如果落子在(row,col)所能形成的重要性"""
-
+    if row==9 and col==9:
+        aaaooo=1
     reup = search_along(UP, row, col, mycolor)
     redown = search_along(DOWN, row, col, mycolor)
     relu = search_along(LEFT_UP, row, col, mycolor)
@@ -185,43 +187,30 @@ def searchImportantStructure(row, col, mycolor):
 
 def Mycolor_calImportance(importantStructureHere):
     """以一个importantStructureHere为参数,返回一个整,代表这个点的重要性数值"""
-    # TODO :朱涛,选择合适的权重，根据各个结构的数量而非存在性进行加分，计算敌我分数差值
-    #      （也可以更准确的来说，是加和。比如我方下这里得10分，敌方得20分，那么下这里就有30分的好处
-    if importantStructureHere.live5 >= 1:
-        return 10001
-    elif importantStructureHere.live4 >= 1:
-        return 8888
-    elif importantStructureHere.live3 >= 1:
-        return 7777
-    elif importantStructureHere.live2 >= 1:
-        return 5555
-    elif importantStructureHere.died4 >= 1:
-        return 6666
-    elif importantStructureHere.died3 >= 1:
-        return 4444
-    elif importantStructureHere.died2 >= 1:
-        return 3333
-    else:
-        return 1111
+    # TODO :周雨童：我已经改好了，基本不用动了
+    sum = 0
+    sum += importantStructureHere.live5 * 1e10
+    sum += importantStructureHere.live4 * 1e8
+    sum += importantStructureHere.live3 * 1e6
+    sum += importantStructureHere.died4 * 1e5
+    sum += importantStructureHere.live2 * 1e4
+    sum += importantStructureHere.died3 * 1e3
+    sum += importantStructureHere.died2 * 1e1
+
+    return sum
 
 
 def Enemy_color_calImportance(importantStructureHere):
-    if importantStructureHere.live5 >= 1:
-        return 10000
-    elif importantStructureHere.live4 >= 1:
-        return 8887
-    elif importantStructureHere.live3 >= 1:
-        return 7776
-    elif importantStructureHere.live2 >= 1:
-        return 5554
-    elif importantStructureHere.died4 >= 1:
-        return 6665
-    elif importantStructureHere.died3 >= 1:
-        return 4443
-    elif importantStructureHere.died2 >= 1:
-        return 3332
-    else:
-        return 1110
+    sum = 1
+    sum += importantStructureHere.live5 * 1e10
+    sum += importantStructureHere.live4 * 1e8
+    sum += importantStructureHere.live3 * 1e6
+    sum += importantStructureHere.died4 * 1e3#细节：我改了一些权重，使得敌我权重不一样，这是应该的
+    sum += importantStructureHere.live2 * 1e3
+    sum += importantStructureHere.died3 * 1e3
+    sum += importantStructureHere.died2 * 1e1
+    sum*=2
+    return sum
 
 
 import_board_17x17()
@@ -234,12 +223,8 @@ printBoard()
 
 MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
 EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
-mymax = 0
-enemymax = 0
 myx = 0
 myy = 0
-eny = 0
-enx = 0
 
 # 我方和敌人的得分列表
 stringColor = input("请输入我方是 黑(h) 还是 白：")
@@ -259,72 +244,91 @@ if stringColor == "黑" or stringColor == "h":
     board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
     printBoard()
 
-
     # 我方第二步
     if (enemyRow == 9 and enemyCol == 9) or (enemyRow == 10 and enemyCol == 10) or (
-            enemyRow == 7 and enemyCol == 7) or (enemyRow == 8 and enemyCol == 9) or \
-            (enemyRow == 9 and enemyCol == 8) or (enemyRow == 11 and enemyCol == 11):
+            enemyRow == 11 and enemyCol == 11) or (enemyRow == 7 and enemyCol == 7) \
+            or (enemyRow == 9 and enemyCol == 8) or (enemyRow == 7 and enemyCol == 8) \
+            or (enemyRow == 8 and enemyCol == 7) or (enemyRow == 8 and enemyCol == 9):
         board_17x17[11][5] = BLACK
         print("落子于10,4")
+        secondStep = (11, 5)
+
     else:
         board_17x17[11][11] = BLACK
         print("落子于10,10")
-
+        secondStep = (11, 11)
     printBoard()
 
     # 我方第三步
-
+    myStepNum = 2  # myStepNum为我方该下哪一步了
     while True:
+        # 初始化
+        myStepNum += 1
+
         enemyWhite = input("请输入白棋落子位置，以空格分开")
         enemyRow, enemyCol = enemyWhite.split(" ")
         enemyRow = int(enemyRow) + 1
         enemyCol = int(enemyCol) + 1
         board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
 
-        myStepNum = 3 # myStepNum为我方该下哪一步了
+        MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
+        EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
+
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if board_17x17[row][col] != BLACK and board_17x17[row][col] != WHITE:
+                if board_17x17[row][col] ==0:
                     imSmy = searchImportantStructure(row, col, MY_COLOR)
                     MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
                     imSen = searchImportantStructure(row, col, ENEMY_COLOR)
                     EnemyscoreBoard[row][col] = Enemy_color_calImportance(imSen)
+        mymax = 0
+        # if myStepNum
+
+
+        if myStepNum <= 10:  # 如果步数小，前几步进行手工推荐部分落子点
+            recommandNum1=9e7
+            recommandNum2=8e7
+
+            if secondStep == (11, 5):
+                if board_17x17[8][7] != ENEMY_COLOR:
+                    MyscoreBoard[8][6] = recommandNum1
+                    MyscoreBoard[9][5] = recommandNum1
+                    MyscoreBoard[8][5] = recommandNum2
+                else:
+                    MyscoreBoard[10][8] = recommandNum1
+                    MyscoreBoard[11][7] = recommandNum1
+                    MyscoreBoard[11][8] = recommandNum2
+            else:
+                if board_17x17[8][9] != ENEMY_COLOR:
+                    MyscoreBoard[8][10] = recommandNum1
+                    MyscoreBoard[9][11] = recommandNum1
+                    MyscoreBoard[8][11] = recommandNum2
+                else:
+                    MyscoreBoard[10][8] = recommandNum1
+                    MyscoreBoard[11][9] = recommandNum1
+                    MyscoreBoard[11][8] = recommandNum2
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if MyscoreBoard[row][col] >= mymax:
-                    mymax = MyscoreBoard[row][col]
+                if row ==9 and col==9:
+                    aaaaa=999
+                if MyscoreBoard[row][col] + EnemyscoreBoard[row][col] > mymax and board_17x17[row][col] == 0:
+                    mymax = MyscoreBoard[row][col] + EnemyscoreBoard[row][col]
                     myx = row
                     myy = col
                     if ZYT_TEST:
                         print("mymax:", mymax, "x:", myx, "y:", myy)
 
-        for row in range(15, 0, -1):
-            for col in range(15, 0, -1):
-                if EnemyscoreBoard[row][col] >= mymax:
-                    enemymanx = EnemyscoreBoard[row][col]
-                    enx = row
-                    eny = col
+        board_17x17[myx][myy] = BLACK
 
-        if MyscoreBoard[myx][myy] >= EnemyscoreBoard[enx][eny]:
-            board_17x17[myx][myy] = BLACK
-        else:
-            board_17x17[enx][eny] = BLACK
-
-        # TODO:朱涛通过一些方法,输出黑棋应当落子的位置
-        # 比如搜索附近的所有点的推荐值
         printBoard()
-        # print(MyscoreBoard)
-        # print(EnemyscoreBoard)
-
-        MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
-        EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
 
 
 
 
 # 我方是白棋子
 else:
+    # TODO :朱涛：模仿我的黑棋进行白棋的前几步手动推荐，同步我对于黑棋的细节更改<-（很重要
     MY_COLOR = WHITE
     ENEMY_COLOR = BLACK
     # TODO:白棋同理于黑棋,输出推荐落子
