@@ -1,3 +1,31 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@pigpeach 
+zyt600
+/
+try-python
+Private
+Code
+Issues
+Pull requests
+Actions
+Projects
+Security
+Insights
+try-python/main.py /
+@zyt600
+zyt600 Update main.py
+Latest commit 1fd20a2 3 minutes ago
+ History
+ 2 contributors
+@zyt600@pigpeach
+363 lines (292 sloc)  12.7 KB
+
 """黑方先行，为1，白方为-1，空棋盘为0，边界为2，
 天元即棋盘的最中心，在board_17x17棋盘的（8，8）,在被打印出的棋盘中位置为(7,7)"""
 board_17x17 = [[0 for i in range(17)] for j in range(17)]
@@ -361,3 +389,17 @@ else:
 
 
         printBoard()
+Footer
+© 2022 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
