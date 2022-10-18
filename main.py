@@ -62,6 +62,8 @@ def printBoard():
 
 def search_along(direction, row, col, myColor):
     """沿着direction方向递归搜索，返回一个SearchResult类"""
+    row += DIRECTION_LIST[direction - 3][1];
+    col += DIRECTION_LIST[direction - 3][0];
     if row <= 0 or col <= 0 or row >= 16 or col >= 16:  # 边界检查
         re = SearchResult(direction, myColor, 0, 0, 1)
         return re
@@ -266,14 +268,16 @@ if stringColor == "黑":
         enemyCol = int(enemyCol) + 1
         board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
 
+        # for row in range(15, 0, -1):
+        #     for col in range(15, 0, -1):
+        #         if board_17x17[row][col]!=BLACK and board_17x17[row][col] !=WHITE:
+        #             imSmy=searchImportantStructure(row, col, MY_COLOR)
+        #             MyscoreBoard[row][col]=Mycolor_calImportance(imSmy)
+        #             imSen = searchImportantStructure(row, col, ENEMY_COLOR)
+        #             EnemyscoreBoard[row][col]=Enemy_color_calImportance(imSen)
 
-        for row in range(15, 0, -1):
-            for col in range(15, 0, -1):
-                if board_17x17[row][col]!=BLACK and board_17x17[row][col] !=WHITE:
-                    imSmy=searchImportantStructure(row, col, MY_COLOR)
-                    MyscoreBoard[row][col]=Mycolor_calImportance(imSmy)
-                    imSen = searchImportantStructure(row, col, ENEMY_COLOR)
-                    EnemyscoreBoard[row][col]=Enemy_color_calImportance(imSen)
+        imSmy = searchImportantStructure(9, 9, MY_COLOR)
+
 
 
         for row in range(15, 0, -1):
@@ -282,6 +286,7 @@ if stringColor == "黑":
                     mymax=MyscoreBoard[row][col]
                     myx=row
                     myy=col
+                    print("aaa",mymax,myx,myy)
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
@@ -296,15 +301,17 @@ if stringColor == "黑":
         else:
             board_17x17[enx][eny] = BLACK
 
-
         # TODO:朱涛通过一些方法,输出黑棋应当落子的位置
         # 比如搜索附近的所有点的推荐值
         printBoard()
-        print(MyscoreBoard)
-        print(EnemyscoreBoard)
+        # print(MyscoreBoard)
+        # print(EnemyscoreBoard)
 
         MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
         EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
+
+
+
 
 #我方是白棋子
 else:
