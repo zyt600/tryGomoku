@@ -33,6 +33,7 @@ class SearchResult:
         self.myColor = myColor
         self.myLen = myLen
 
+
 def searchable(row, col):
     """判断(row,col)是否在棋盘内"""
     if row <= 0 or col <= 0 or row >= 16 or col >= 16:
@@ -48,8 +49,8 @@ def printBoard():
         # print('\033[30;40mb\033[0m', end=' ')
         #
         # print("\033[31m这是红色字体\033[0m")
-        print("%02d:" % (i - 1), end=' ')
-        ##$##输出横索引
+        print("\033[31m%02d\033[0m:" % (i - 1), end=' ')
+        # 输出行索引
         for j in range(1, 16):
             if board_17x17[i][j] == BLACK:
                 print('\033[30;40mb\033[0m', end='  ')
@@ -58,18 +59,20 @@ def printBoard():
             else:
                 print(board_17x17[i][j], end='  ')
         print()
+    # 输出列索引
     print("    ",end='')
     for i in range(10):
-        print(i,end='  ',sep='')
+        print("\033[31m%d\033[0m"%i,end='  ',sep='')
     for i in range(10,15):
-        print(i,end=' ',sep='')
+        print("\033[31m%d\033[0m"%i,end=' ',sep='')
     print()
 
 
-def search_along(direction, row, col, myColor):
+def search_along(direction, row, col, myColor,first=True):
     """沿着direction方向递归搜索，返回一个SearchResult类"""
-    row += DIRECTION_LIST[direction - 3][1];
-    col += DIRECTION_LIST[direction - 3][0];
+    if first:
+        row += DIRECTION_LIST[direction - 3][1]
+        col += DIRECTION_LIST[direction - 3][0]
     if row <= 0 or col <= 0 or row >= 16 or col >= 16:  # 边界检查
         re = SearchResult(direction, myColor, 0, 0, 1)
         return re
@@ -80,7 +83,7 @@ def search_along(direction, row, col, myColor):
         re = SearchResult(direction, myColor, 0, 1, 0)
         return re
     # 有我方棋子情况，注意返回值
-    result = search_along(direction, row + DIRECTION_LIST[direction - 3][1], col + DIRECTION_LIST[direction - 3][0], myColor)
+    result = search_along(direction, row + DIRECTION_LIST[direction - 3][1], col + DIRECTION_LIST[direction - 3][0], myColor,False)
     result.myLen += 1
     return result
 
@@ -131,6 +134,8 @@ class importantStructureHere:
 def searchImportantStructure(row,col,mycolor):
     """搜索如果落子在(row,col)所能形成的重要性"""
 #     TODO:朱涛,通过search_along函数的返回值判断形成的各个importantStructureHere结构的数量,返回一个importantStructureHere结构
+    if row==6 and col ==8:
+        oooiii=1
     reup =search_along(UP, row, col, mycolor)
     redown =search_along(DOWN, row, col, mycolor)
     relu=search_along(LEFT_UP, row, col, mycolor)
@@ -236,8 +241,8 @@ enx=0
 
 #我方和敌人的得分列表
 
-stringColor = input("请输入我方是 黑 还是 白")
-if stringColor == "黑":
+stringColor = input("请输入我方是 黑(h) 还是 白：")
+if stringColor == "黑" or stringColor == "h":
     MY_COLOR = BLACK
     ENEMY_COLOR = WHITE
     print("以最左下角可落子处为（0，0），我方第一步落子于（7，7）")
@@ -274,15 +279,14 @@ if stringColor == "黑":
         enemyCol = int(enemyCol) + 1
         board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
 
-        # for row in range(15, 0, -1):
-        #     for col in range(15, 0, -1):
-        #         if board_17x17[row][col]!=BLACK and board_17x17[row][col] !=WHITE:
-        #             imSmy=searchImportantStructure(row, col, MY_COLOR)
-        #             MyscoreBoard[row][col]=Mycolor_calImportance(imSmy)
-        #             imSen = searchImportantStructure(row, col, ENEMY_COLOR)
-        #             EnemyscoreBoard[row][col]=Enemy_color_calImportance(imSen)
+        for row in range(15, 0, -1):
+            for col in range(15, 0, -1):
+                if board_17x17[row][col]!=BLACK and board_17x17[row][col] !=WHITE:
+                    imSmy=searchImportantStructure(row, col, MY_COLOR)
+                    MyscoreBoard[row][col]=Mycolor_calImportance(imSmy)
+                    imSen = searchImportantStructure(row, col, ENEMY_COLOR)
+                    EnemyscoreBoard[row][col]=Enemy_color_calImportance(imSen)
 
-        imSmy = searchImportantStructure(9, 9, MY_COLOR)
 
 
 
