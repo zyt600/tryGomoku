@@ -1,23 +1,14 @@
 """黑方先行，为1，白方为-1，空棋盘为0，边界为2，
 天元即棋盘的最中心，在board_17x17棋盘的（8，8）,在被打印出的棋盘中位置为(7,7)"""
+from usefulHEAD import *
+from structureWeight import *
+
 board_17x17 = [[0 for i in range(17)] for j in range(17)]
-EMPTY = 0
-BLACK = 1
-WHITE = -1
-BOUNDARY = 2
-UP = 3  # 定义方向常量，上
-DOWN = 4  # 定义方向常量，下
-LEFT_UP = 5  # 定义方向常量，左上
-RIGHT_UP = 6  # 定义方向常量，右上
-LEFT = 7  # 定义方向常量，左
-RIGHT = 8  # 定义方向常量，右
-LEFT_DOWN = 9  # 定义方向常量，左下
-RIGHT_DOWN = 10  # 定义方向常量，右下
-DIRECTION_LIST = [[0, 1], [0, -1], [-1, 1], [1, 1], [-1, 0], [1, 0], [-1, -1], [1, -1]]
+
 MY_COLOR = 0
 ENEMY_COLOR = 0
 ZYT_TEST = True  # 是否输出测试内容
-IF_IMPORT_BOARD = True  # 是否使用导入棋盘，还是初始化空棋盘
+IF_IMPORT_BOARD = False  # 是否使用导入棋盘，还是初始化空棋盘
 
 
 class SearchResult:
@@ -37,7 +28,7 @@ class SearchResult:
 
 
 def searchable(row, col):
-    """判断(row,col)是否在棋盘内"""
+    """判断(row,col)是否在棋盘内,并且可以被搜索"""
     if row <= 0 or col <= 0 or row >= 16 or col >= 16:
         return False
     if board_17x17[row][col] == BLACK or board_17x17[row][col] == WHITE:
@@ -48,11 +39,9 @@ def searchable(row, col):
 def printBoard():
     """输出整个棋盘"""
     for i in range(15, 0, -1):
-        # print('\033[30;40mb\033[0m', end=' ')
-        #
-        # print("\033[31m这是红色字体\033[0m")
-        print("\033[31m%02d\033[0m:" % (i - 1), end=' ')
         # 输出行索引
+        print("\033[31m%02d\033[0m:" % (i - 1), end=' ')
+
         for j in range(1, 16):
             if board_17x17[i][j] == BLACK:
                 print('\033[30;40mb\033[0m', end='  ')
@@ -185,28 +174,29 @@ def searchImportantStructure(row, col, mycolor):
 
 
 def Mycolor_calImportance(importantStructureHere):
-    """以一个importantStructureHere为参数,返回一个整,代表这个点的重要性数值"""
+    """以一个importantStructureHere为参数,返回一个整数,代表这个点的重要性数值"""
     sum = 0
-    sum += importantStructureHere.live5 * 1e20
-    sum += importantStructureHere.live4 * 1e10
-    sum += importantStructureHere.live3 * 1e6
-    sum += importantStructureHere.died4 * 1e5
-    sum += importantStructureHere.live2 * 1e4
-    sum += importantStructureHere.died3 * 1e3
-    sum += importantStructureHere.died2 * 1e1
+    sum += importantStructureHere.live5 * mylive5weight
+    sum += importantStructureHere.live4 * mylive4weight
+    sum += importantStructureHere.live3 * mylive3weight
+    sum += importantStructureHere.died4 * mydie4weight
+    sum += importantStructureHere.live2 * mylive2weight
+    sum += importantStructureHere.died3 * mydie3weight
+    sum += importantStructureHere.died2 * mydie2weight
 
     return sum
 
 
 def Enemy_color_calImportance(importantStructureHere):
+    """以一个importantStructureHere为参数,返回一个整数,代表这个点的重要性数值"""
     sum = 1
-    sum += importantStructureHere.live5 * 1e15
-    sum += importantStructureHere.live4 * 1e8
-    sum += importantStructureHere.live3 * 2e5
-    sum += importantStructureHere.died4 * 1e3
-    sum += importantStructureHere.live2 * 1e3
-    sum += importantStructureHere.died3 * 1e3
-    sum += importantStructureHere.died2 * 1e1
+    sum += importantStructureHere.live5 * enemylive5weight
+    sum += importantStructureHere.live4 * enemylive4weight
+    sum += importantStructureHere.live3 * enemylive3weight
+    sum += importantStructureHere.died4 * enemydie4weight
+    sum += importantStructureHere.live2 * enemylive2weight
+    sum += importantStructureHere.died3 * enemydie3weight
+    sum += importantStructureHere.died2 * enemydie2weight
 
     return sum
 
@@ -287,10 +277,10 @@ if stringColor == "黑" or stringColor == "h":
         if myStepNum <= 10:  # 如果步数小，前几步进行手工推荐部分落子点
             recommandNum1 = 9e7
             # recommandNum2 = 8e7
-
             if secondStep == (11, 5):
+                MyscoreBoard[10][6] += mydie4weight
                 if board_17x17[8][7] != ENEMY_COLOR:
-                    if board_17x17[8][9]!=ENEMY_COLOR:
+                    if board_17x17[8][9] != ENEMY_COLOR:
                         MyscoreBoard[8][6] = recommandNum1
                     MyscoreBoard[9][5] = recommandNum1
                     MyscoreBoard[8][5] *= 200
@@ -299,6 +289,7 @@ if stringColor == "黑" or stringColor == "h":
                     MyscoreBoard[11][7] = recommandNum1
                     MyscoreBoard[11][8] *= 200
             else:
+                MyscoreBoard[10][10]+=mydie4weight
                 if board_17x17[8][9] != ENEMY_COLOR:
                     MyscoreBoard[8][10] = recommandNum1
                     MyscoreBoard[9][11] = recommandNum1
@@ -324,7 +315,7 @@ if stringColor == "黑" or stringColor == "h":
 
         board_17x17[myx][myy] = BLACK
         printBoard()
-        print("我方落子于（",myx-1,",",myy-1,")")
+        print("我方落子于（", myx - 1, ",", myy - 1, ")")
 
 
 
@@ -489,3 +480,4 @@ else:
 
         board_17x17[myx][myy] = WHITE
         printBoard()
+        print("我方落子于（", myx - 1, ",", myy - 1, ")")
