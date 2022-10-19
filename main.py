@@ -16,7 +16,8 @@ RIGHT_DOWN = 10  # 定义方向常量，右下
 DIRECTION_LIST = [[0, 1], [0, -1], [-1, 1], [1, 1], [-1, 0], [1, 0], [-1, -1], [1, -1]]
 MY_COLOR = 0
 ENEMY_COLOR = 0
-ZYT_TEST = True
+ZYT_TEST = True  # 是否输出测试内容
+IF_IMPORT_BOARD = True  # 是否使用导入棋盘，还是初始化空棋盘
 
 
 class SearchResult:
@@ -137,8 +138,6 @@ class importantStructureHere:
 
 def searchImportantStructure(row, col, mycolor):
     """搜索如果落子在(row,col)所能形成的重要性"""
-    if row==9 and col==9:
-        aaaooo=1
     reup = search_along(UP, row, col, mycolor)
     redown = search_along(DOWN, row, col, mycolor)
     relu = search_along(LEFT_UP, row, col, mycolor)
@@ -203,7 +202,7 @@ def Enemy_color_calImportance(importantStructureHere):
     sum = 1
     sum += importantStructureHere.live5 * 1e15
     sum += importantStructureHere.live4 * 1e8
-    sum += importantStructureHere.live3 * 1e6
+    sum += importantStructureHere.live3 * 2e5
     sum += importantStructureHere.died4 * 1e3
     sum += importantStructureHere.live2 * 1e3
     sum += importantStructureHere.died3 * 1e3
@@ -212,13 +211,15 @@ def Enemy_color_calImportance(importantStructureHere):
     return sum
 
 
-import_board_17x17()
+if IF_IMPORT_BOARD:
+    import_board_17x17()
+else:
+    for ii in range(17):  # 设置棋盘边界
+        board_17x17[ii][0] = 2
+        board_17x17[0][ii] = 2
+        board_17x17[ii][16] = 2
+        board_17x17[16][ii] = 2
 printBoard()
-# for ii in range(17):  # 设置棋盘边界
-#     board_17x17[ii][0] = 2
-#     board_17x17[0][ii] = 2
-#     board_17x17[ii][16] = 2
-#     board_17x17[16][ii] = 2
 
 MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
 EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
@@ -275,7 +276,7 @@ if stringColor == "黑" or stringColor == "h":
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if board_17x17[row][col] ==0:
+                if board_17x17[row][col] == 0:
                     imSmy = searchImportantStructure(row, col, MY_COLOR)
                     MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
                     imSen = searchImportantStructure(row, col, ENEMY_COLOR)
@@ -283,48 +284,47 @@ if stringColor == "黑" or stringColor == "h":
         mymax = 0
         # if myStepNum
 
-
         if myStepNum <= 10:  # 如果步数小，前几步进行手工推荐部分落子点
-            recommandNum1=9e7
-            recommandNum2=8e7
+            recommandNum1 = 9e7
+            # recommandNum2 = 8e7
 
             if secondStep == (11, 5):
                 if board_17x17[8][7] != ENEMY_COLOR:
-                    MyscoreBoard[8][6] = recommandNum1
+                    if board_17x17[8][9]!=ENEMY_COLOR:
+                        MyscoreBoard[8][6] = recommandNum1
                     MyscoreBoard[9][5] = recommandNum1
-                    MyscoreBoard[8][5] = recommandNum2
-                else:
+                    MyscoreBoard[8][5] *= 200
+                elif board_17x17[9][8] != ENEMY_COLOR:
                     MyscoreBoard[10][8] = recommandNum1
                     MyscoreBoard[11][7] = recommandNum1
-                    MyscoreBoard[11][8] = recommandNum2
+                    MyscoreBoard[11][8] *= 200
             else:
                 if board_17x17[8][9] != ENEMY_COLOR:
                     MyscoreBoard[8][10] = recommandNum1
                     MyscoreBoard[9][11] = recommandNum1
-                    MyscoreBoard[8][11] = recommandNum2
-                else:
+                    MyscoreBoard[8][11] *= 200
+                elif board_17x17[9][8] != ENEMY_COLOR:
                     MyscoreBoard[10][8] = recommandNum1
                     MyscoreBoard[11][9] = recommandNum1
-                    MyscoreBoard[11][8] = recommandNum2
+                    MyscoreBoard[11][8] *= 200
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if row ==9 and col==9:
-                    aaaaa=999
-                #if (max(MyscoreBoard[row][col] ,EnemyscoreBoard[row][col])>mymax and board_17x17[row][col] == 0):
-                    #mymax=max(MyscoreBoard[row][col], EnemyscoreBoard[row][col])
+                # if (max(MyscoreBoard[row][col] ,EnemyscoreBoard[row][col])>mymax and board_17x17[row][col] == 0):
+                # mymax=max(MyscoreBoard[row][col], EnemyscoreBoard[row][col])
 
                 if MyscoreBoard[row][col] + EnemyscoreBoard[row][col] > mymax and board_17x17[row][col] == 0:
                     mymax = MyscoreBoard[row][col] + EnemyscoreBoard[row][col]
                     myx = row
                     myy = col
-                    #if ZYT_TEST:
-                    print("mymax:", mymax, "x:", myx, "y:", myy)
-                    print(MyscoreBoard[row][col])
-                    print(EnemyscoreBoard[row][col])
+                    if ZYT_TEST:
+                        print("mymax:", mymax, "x:", myx, "y:", myy)
+                        print(MyscoreBoard[row][col])
+                        print(EnemyscoreBoard[row][col])
 
         board_17x17[myx][myy] = BLACK
         printBoard()
+        print("我方落子于（",myx-1,",",myy-1,")")
 
 
 
@@ -337,12 +337,12 @@ else:
     enemyRow, enemyCol = enemyWhite.split(" ")
     enemyRow = int(enemyRow) + 1
     enemyCol = int(enemyCol) + 1
-    x1=enemyRow
-    y1=enemyCol
+    x1 = enemyRow
+    y1 = enemyCol
     board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
 
-    #我方第一步棋子，使用棋谱中的斜指，默认向右上指
-    board_17x17[enemyRow+1][enemyCol+1] =MY_COLOR
+    # 我方第一步棋子，使用棋谱中的斜指，默认向右上指
+    board_17x17[enemyRow + 1][enemyCol + 1] = MY_COLOR
     printBoard()
 
     # 我方第二步棋子
@@ -352,81 +352,24 @@ else:
     enemyCol = int(enemyCol) + 1
     x2 = enemyRow
     y2 = enemyCol
-    case1=0
-    case2=0
-    case3=0
-    case4=0
+    case1 = 0
+    case2 = 0
+    case3 = 0
+    case4 = 0
     board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
-    if(x1==enemyRow-1 and y1==enemyCol):
-         board_17x17[enemyRow + 1][enemyCol] = MY_COLOR
-         case1+=1
+    if (x1 == enemyRow - 1 and y1 == enemyCol):
+        board_17x17[enemyRow + 1][enemyCol] = MY_COLOR
+        case1 += 1
     elif (x1 == enemyRow + 1 and y1 == enemyCol):
-         board_17x17[enemyRow + 2][enemyCol] = MY_COLOR
-         case2 += 1
-    elif (x1 == enemyRow  and y1 == enemyCol+1):
-         board_17x17[enemyRow][enemyCol+2] = MY_COLOR
-         case3 += 1
-    elif (x1 == enemyRow  and y1 == enemyCol-1):
-         board_17x17[enemyRow][enemyCol +1] = MY_COLOR
-         case4 += 1
-    else:
-        for row in range(15, 0, -1):
-            for col in range(15, 0, -1):
-                if board_17x17[row][col] != BLACK and board_17x17[row][col] != WHITE:
-                    imSmy = searchImportantStructure(row, col, MY_COLOR)
-                    MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
-                    imSen = searchImportantStructure(row, col, ENEMY_COLOR)
-                    EnemyscoreBoard[row][col] = Enemy_color_calImportance(imSen)
-        mymax=0
-
-        for row in range(15, 0, -1):
-            for col in range(15, 0, -1):
-                if row ==9 and col==9:
-                    aaaaa=999
-                #if (max(MyscoreBoard[row][col] ,EnemyscoreBoard[row][col])>mymax and board_17x17[row][col] == 0):
-                    #mymax=max(MyscoreBoard[row][col], EnemyscoreBoard[row][col])
-
-                if MyscoreBoard[row][col] + EnemyscoreBoard[row][col] > mymax and board_17x17[row][col] == 0:
-                    mymax = MyscoreBoard[row][col] + EnemyscoreBoard[row][col]
-                    myx = row
-                    myy = col
-                    #if ZYT_TEST:
-                    print("mymax:", mymax, "x:", myx, "y:", myy)
-                    print(MyscoreBoard[row][col])
-                    print(EnemyscoreBoard[row][col])
-
-        board_17x17[myx][myy] = WHITE
-    printBoard()
-
-    #我方第三步棋子
-    enemyWhite = input("请输入黑棋落子位置，以空格分开")
-    enemyRow, enemyCol = enemyWhite.split(" ")
-    enemyRow = int(enemyRow) + 1
-    enemyCol = int(enemyCol) + 1
-    board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
-    if(case1==1 and x1==enemyRow and y1==enemyCol+1):
-        board_17x17[enemyRow][enemyCol+2] = MY_COLOR
-    elif (case1 == 1 and x1 == enemyRow and y1 == enemyCol - 1):
+        board_17x17[enemyRow + 2][enemyCol] = MY_COLOR
+        case2 += 1
+    elif (x1 == enemyRow and y1 == enemyCol + 1):
+        board_17x17[enemyRow][enemyCol + 2] = MY_COLOR
+        case3 += 1
+    elif (x1 == enemyRow and y1 == enemyCol - 1):
         board_17x17[enemyRow][enemyCol + 1] = MY_COLOR
-    elif(case2==1and x1==enemyRow and y1==enemyCol-1):
-        board_17x17[enemyRow+2][enemyCol-2] = MY_COLOR
-    elif (case2 == 1 and x1 == enemyRow-1 and y1 == enemyCol - 1):
-        board_17x17[enemyRow + 1][enemyCol +1] = MY_COLOR
-    elif (case2 == 1 and x1 == enemyRow-1 and y1 == enemyCol +1):
-        board_17x17[enemyRow ][enemyCol +2] = MY_COLOR
-    elif(case3==1 and x1 == enemyRow-1 and y1 == enemyCol +1):
-        board_17x17[enemyRow-2][enemyCol + 2] = MY_COLOR
-    elif (case3 == 1 and x1 == enemyRow - 1 and y1 == enemyCol ):
-        board_17x17[enemyRow +1][enemyCol + 1] = MY_COLOR
-    elif (case3 == 1 and x1 == enemyRow + 1 and y1 == enemyCol ):
-        board_17x17[enemyRow +2][enemyCol ] = MY_COLOR
-    elif(case4==1 and x1 == enemyRow + 1 and y1 == enemyCol):
-        board_17x17[enemyRow + 2][enemyCol + 2] = MY_COLOR
-    elif (case4 == 1 and x1 == enemyRow - 1 and y1 == enemyCol):
-        board_17x17[enemyRow - 2][enemyCol + 2] = MY_COLOR
+        case4 += 1
     else:
-        MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
-        EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
                 if board_17x17[row][col] != BLACK and board_17x17[row][col] != WHITE:
@@ -447,6 +390,61 @@ else:
                     mymax = MyscoreBoard[row][col] + EnemyscoreBoard[row][col]
                     myx = row
                     myy = col
+                    if ZYT_TEST:
+                        print("mymax:", mymax, "x:", myx, "y:", myy)
+                        print(MyscoreBoard[row][col])
+                        print(EnemyscoreBoard[row][col])
+
+        board_17x17[myx][myy] = WHITE
+    printBoard()
+
+    # 我方第三步棋子
+    enemyWhite = input("请输入黑棋落子位置，以空格分开")
+    enemyRow, enemyCol = enemyWhite.split(" ")
+    enemyRow = int(enemyRow) + 1
+    enemyCol = int(enemyCol) + 1
+    board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
+    if (case1 == 1 and x1 == enemyRow and y1 == enemyCol + 1):
+        board_17x17[enemyRow][enemyCol + 2] = MY_COLOR
+    elif (case1 == 1 and x1 == enemyRow and y1 == enemyCol - 1):
+        board_17x17[enemyRow][enemyCol + 1] = MY_COLOR
+    elif (case2 == 1 and x1 == enemyRow and y1 == enemyCol - 1):
+        board_17x17[enemyRow + 2][enemyCol - 2] = MY_COLOR
+    elif (case2 == 1 and x1 == enemyRow - 1 and y1 == enemyCol - 1):
+        board_17x17[enemyRow + 1][enemyCol + 1] = MY_COLOR
+    elif (case2 == 1 and x1 == enemyRow - 1 and y1 == enemyCol + 1):
+        board_17x17[enemyRow][enemyCol + 2] = MY_COLOR
+    elif (case3 == 1 and x1 == enemyRow - 1 and y1 == enemyCol + 1):
+        board_17x17[enemyRow - 2][enemyCol + 2] = MY_COLOR
+    elif (case3 == 1 and x1 == enemyRow - 1 and y1 == enemyCol):
+        board_17x17[enemyRow + 1][enemyCol + 1] = MY_COLOR
+    elif (case3 == 1 and x1 == enemyRow + 1 and y1 == enemyCol):
+        board_17x17[enemyRow + 2][enemyCol] = MY_COLOR
+    elif (case4 == 1 and x1 == enemyRow + 1 and y1 == enemyCol):
+        board_17x17[enemyRow + 2][enemyCol + 2] = MY_COLOR
+    elif (case4 == 1 and x1 == enemyRow - 1 and y1 == enemyCol):
+        board_17x17[enemyRow - 2][enemyCol + 2] = MY_COLOR
+    else:
+        MyscoreBoard = [[0 for x1 in (range(17))] for y1 in range(17)]
+        EnemyscoreBoard = [[0 for x2 in (range(17))] for y2 in range(17)]
+        for row in range(15, 0, -1):
+            for col in range(15, 0, -1):
+                if board_17x17[row][col] != BLACK and board_17x17[row][col] != WHITE:
+                    imSmy = searchImportantStructure(row, col, MY_COLOR)
+                    MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
+                    imSen = searchImportantStructure(row, col, ENEMY_COLOR)
+                    EnemyscoreBoard[row][col] = Enemy_color_calImportance(imSen)
+        mymax = 0
+
+        for row in range(15, 0, -1):
+            for col in range(15, 0, -1):
+                # if (max(MyscoreBoard[row][col] ,EnemyscoreBoard[row][col])>mymax and board_17x17[row][col] == 0):
+                # mymax=max(MyscoreBoard[row][col], EnemyscoreBoard[row][col])
+
+                if MyscoreBoard[row][col] + EnemyscoreBoard[row][col] > mymax and board_17x17[row][col] == 0:
+                    mymax = MyscoreBoard[row][col] + EnemyscoreBoard[row][col]
+                    myx = row
+                    myy = col
                     # if ZYT_TEST:
                     print("mymax:", mymax, "x:", myx, "y:", myy)
                     print(MyscoreBoard[row][col])
@@ -455,8 +453,7 @@ else:
         board_17x17[myx][myy] = WHITE
     printBoard()
 
-
-    #后面为自动下棋
+    # 后面为自动下棋
     while True:
         enemyWhite = input("请输入黑棋落子位置，以空格分开")
         enemyRow, enemyCol = enemyWhite.split(" ")
@@ -474,20 +471,18 @@ else:
                     MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
                     imSen = searchImportantStructure(row, col, ENEMY_COLOR)
                     EnemyscoreBoard[row][col] = Enemy_color_calImportance(imSen)
-        mymax=0
+        mymax = 0
 
         for row in range(15, 0, -1):
             for col in range(15, 0, -1):
-                if row ==9 and col==9:
-                    aaaaa=999
-                #if (max(MyscoreBoard[row][col] ,EnemyscoreBoard[row][col])>mymax and board_17x17[row][col] == 0):
-                    #mymax=max(MyscoreBoard[row][col], EnemyscoreBoard[row][col])
+                # if (max(MyscoreBoard[row][col] ,EnemyscoreBoard[row][col])>mymax and board_17x17[row][col] == 0):
+                # mymax=max(MyscoreBoard[row][col], EnemyscoreBoard[row][col])
 
                 if MyscoreBoard[row][col] + EnemyscoreBoard[row][col] > mymax and board_17x17[row][col] == 0:
                     mymax = MyscoreBoard[row][col] + EnemyscoreBoard[row][col]
                     myx = row
                     myy = col
-                    #if ZYT_TEST:
+                    # if ZYT_TEST:
                     print("mymax:", mymax, "x:", myx, "y:", myy)
                     print(MyscoreBoard[row][col])
                     print(EnemyscoreBoard[row][col])
