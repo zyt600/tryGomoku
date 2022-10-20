@@ -60,7 +60,7 @@ def printBoard():
 
 
 def search_along(direction, row, col, myColor, first=True):
-    """沿着direction方向递归搜索，返回一个SearchResult类"""
+    """沿着direction方向从（row, col）递归搜索，返回一个SearchResult类"""
     if first:
         row += DIRECTION_LIST[direction - 3][1]
         col += DIRECTION_LIST[direction - 3][0]
@@ -81,6 +81,7 @@ def search_along(direction, row, col, myColor, first=True):
 
 
 def import_board_17x17():
+    """用于导入的外部棋盘"""
     f = open("board17x17.txt", "r+")
     for i in range(17):
         line = f.readline()
