@@ -60,7 +60,7 @@ def printBoard():
 
 
 def search_along(direction, row, col, myColor, first=True):
-    """沿着direction方向从（row, col）递归搜索，返回一个SearchResult类"""
+    """沿着direction方向递归搜索，返回一个SearchResult类"""
     if first:
         row += DIRECTION_LIST[direction - 3][1]
         col += DIRECTION_LIST[direction - 3][0]
@@ -81,7 +81,6 @@ def search_along(direction, row, col, myColor, first=True):
 
 
 def import_board_17x17():
-    """用于导入的外部棋盘"""
     f = open("board17x17.txt", "r+")
     for i in range(17):
         line = f.readline()
@@ -319,6 +318,8 @@ if stringColor == "黑" or stringColor == "h":
         print("我方落子于（", myx - 1, ",", myy - 1, ")")
 
 
+
+
 # 我方是白棋子
 else:
     MY_COLOR = WHITE
@@ -375,27 +376,51 @@ else:
     enemyRow = int(enemyRow) + 1
     enemyCol = int(enemyCol) + 1
     board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
+    for row in range(15, 0, -1):
+        for col in range(15, 0, -1):
+            if board_17x17[row][col] != BLACK and board_17x17[row][col] != WHITE:
+                imSmy = searchImportantStructure(row, col, MY_COLOR)
+                MyscoreBoard[row][col] = Mycolor_calImportance(imSmy)
+                imSen = searchImportantStructure(row, col, ENEMY_COLOR)
+                EnemyscoreBoard[row][col] = Enemy_color_calImportance(imSen)
+    mymax = 0
+
     if(board_17x17[8][9] == MY_COLOR):
         if (board_17x17[7][10] == ENEMY_COLOR or board_17x17[8][9] == ENEMY_COLOR):
-            board_17x17[9][9] = MY_COLOR
+            MyscoreBoard[9][9] = enemylive3weight-1
         else:
             if (board_17x17[8][7] != ENEMY_COLOR):
-                board_17x17[8][7] = MY_COLOR
+                MyscoreBoard[8][7] = enemylive3weight-1
             else:
-                board_17x17[7][8] = MY_COLOR
+                MyscoreBoard[7][8] = enemylive3weight-1
     if (board_17x17[8][7] == MY_COLOR):
         if (board_17x17[7][6] == ENEMY_COLOR or board_17x17[10][9] == ENEMY_COLOR):
-            board_17x17[9][7] = MY_COLOR
+            MyscoreBoard[9][7] = enemylive3weight-1
         else:
             if (board_17x17[8][9] != ENEMY_COLOR):
-                board_17x17[8][9] = MY_COLOR
+                MyscoreBoard[8][9] = enemylive3weight-1
             else:
-                board_17x17[7][8] = MY_COLOR
+                MyscoreBoard[7][8] = enemylive3weight-1
     if (board_17x17[7][8] == MY_COLOR):
         if (board_17x17[8][9] != ENEMY_COLOR):
-            board_17x17[8][9] = MY_COLOR
+            MyscoreBoard[8][9] = enemylive3weight-1
         else:
-            board_17x17[8][7] = MY_COLOR
+            MyscoreBoard[8][7] = enemylive3weight-1
+
+    for row in range(15, 0, -1):
+        for col in range(15, 0, -1):
+            # if (max(MyscoreBoard[row][col] ,EnemyscoreBoard[row][col])>mymax and board_17x17[row][col] == 0):
+            # mymax=max(MyscoreBoard[row][col], EnemyscoreBoard[row][col])
+
+            if MyscoreBoard[row][col] + EnemyscoreBoard[row][col] > mymax and board_17x17[row][col] == 0:
+                mymax = MyscoreBoard[row][col] + EnemyscoreBoard[row][col]
+                myx = row
+                myy = col
+                if ZYT_TEST:
+                    print("mymax:", mymax, "x:", myx, "y:", myy)
+                    print(MyscoreBoard[row][col])
+                    print(EnemyscoreBoard[row][col])
+    board_17x17[myx][myy] = WHITE
     printBoard()
 
     # 后面为自动下棋
