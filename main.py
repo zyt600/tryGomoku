@@ -387,25 +387,25 @@ else:
 
     if(board_17x17[8][9] == MY_COLOR):
         if (board_17x17[7][10] == ENEMY_COLOR or board_17x17[8][9] == ENEMY_COLOR):
-            MyscoreBoard[9][9] = enemylive3weight-1
+            MyscoreBoard[9][9] = mylive3weight+1
         else:
             if (board_17x17[8][7] != ENEMY_COLOR):
-                MyscoreBoard[8][7] = enemylive3weight-1
+                MyscoreBoard[8][7] = mylive3weight+1
             else:
-                MyscoreBoard[7][8] = enemylive3weight-1
+                MyscoreBoard[7][8] = mylive3weight+1
     if (board_17x17[8][7] == MY_COLOR):
         if (board_17x17[7][6] == ENEMY_COLOR or board_17x17[10][9] == ENEMY_COLOR):
-            MyscoreBoard[9][7] = enemylive3weight-1
+            MyscoreBoard[9][7] = mylive3weight+1
         else:
             if (board_17x17[8][9] != ENEMY_COLOR):
-                MyscoreBoard[8][9] = enemylive3weight-1
+                MyscoreBoard[8][9] = mylive3weight+1
             else:
-                MyscoreBoard[7][8] = enemylive3weight-1
+                MyscoreBoard[7][8] = mylive3weight+1
     if (board_17x17[7][8] == MY_COLOR):
         if (board_17x17[8][9] != ENEMY_COLOR):
-            MyscoreBoard[8][9] = enemylive3weight-1
+            MyscoreBoard[8][9] = mylive3weight+1
         else:
-            MyscoreBoard[8][7] = enemylive3weight-1
+            MyscoreBoard[8][7] = mylive3weight+1
 
     for row in range(15, 0, -1):
         for col in range(15, 0, -1):
