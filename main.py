@@ -333,23 +333,15 @@ else:
     board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
 
     # 我方第一步棋子，使用棋谱中的斜指，默认向上指
-    board_17x17[enemyRow+1][enemyCol ] = MY_COLOR
+    board_17x17[enemyRow+1][enemyCol] = MY_COLOR
     printBoard()
-    #
 
 
-    #
     # 我方第二步棋子
     enemyWhite = input("请输入黑棋落子位置，以空格分开")
     enemyRow, enemyCol = enemyWhite.split(" ")
     enemyRow = int(enemyRow) + 1
     enemyCol = int(enemyCol) + 1
-    x2 = enemyRow
-    y2 = enemyCol
-    case1 = 0
-    case2 = 0
-    case3 = 0
-    case4 = 0
     board_17x17[enemyRow][enemyCol] = ENEMY_COLOR
     if ( enemyRow>7 and enemyCol>7 ):
         board_17x17[8][9] = MY_COLOR
