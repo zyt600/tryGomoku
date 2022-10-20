@@ -318,8 +318,6 @@ if stringColor == "黑" or stringColor == "h":
         print("我方落子于（", myx - 1, ",", myy - 1, ")")
 
 
-
-
 # 我方是白棋子
 else:
     MY_COLOR = WHITE
